@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Kickstand Journal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: a ledger-style index (meta column + title column) under a masthead; articles read in a single 66ch column with a spec strip on top. */
+:root{
+  --bg:#EDF0F1; --surface:#F7F9F9; --fg:#121C1E; --muted:#516063; --line:#CBD3D5;
+  --accent:#0B5A6B; --accent-fg:#FFFFFF; --tape:#D9480F;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1517; --surface:#141D20; --fg:#E6EDEE; --muted:#93A4A8; --line:#263337;
+    --accent:#58B7CC; --accent-fg:#0E1517; --tape:#FF8A4C; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1517; --surface:#141D20; --fg:#E6EDEE; --muted:#93A4A8; --line:#263337;
+  --accent:#58B7CC; --accent-fg:#0E1517; --tape:#FF8A4C; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg); font-family:var(--body); font-size:18px; line-height:1.65;
+  padding-block:0 64px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap{max-width:980px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+/* masthead */
+header.mast{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;padding:36px 0 20px;border-bottom:3px solid var(--fg)}
+.brand{text-decoration:none;display:block}
+.brand b{font-family:var(--display);font-weight:800;font-size:clamp(34px,7vw,56px);letter-spacing:-.03em;line-height:.95;display:block}
+.brand b span{color:var(--tape)}
+.brand small{display:block;margin-top:8px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.top{display:flex;gap:20px;font-family:var(--display);font-weight:700;font-size:15px;align-items:center}
+nav.top a{text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}
+nav.top a[aria-current="page"]{border-color:var(--tape)}
+nav.top a:hover{border-color:var(--muted)}
+.theme{font:inherit;font-family:var(--mono);font-size:12px;background:none;color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:6px 10px;cursor:pointer}
+.theme:hover{border-color:var(--fg)}
+
+/* filters */
+.tools{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;justify-content:space-between;padding:20px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;background:none;color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip:hover{border-color:var(--fg)}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.search{font-family:var(--body);font-size:16px;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:8px 12px;width:min(100%,260px)}
+.search::placeholder{color:var(--muted)}
+
+/* ledger index */
+.lead{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;padding:8px 0 32px;border-bottom:1px solid var(--line)}
+.lead a{text-decoration:none}
+.lead h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,52px);line-height:1.05;letter-spacing:-.025em;margin:6px 0 4px;text-wrap:balance;max-width:20ch}
+.lead p{max-width:58ch;color:var(--muted);margin:0;font-size:19px}
+.lead a:hover h2{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px;text-decoration-color:var(--tape)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tape);font-weight:500}
+.rows{list-style:none;margin:0;padding:0}
+.row a{display:grid;grid-template-columns:150px minmax(0,1fr) 110px;gap:8px 28px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.row .meta{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;display:flex;flex-direction:column;gap:4px}
+.row h3{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.2;letter-spacing:-.01em;margin:0 0 4px;text-wrap:balance}
+.row p{margin:0;color:var(--muted);font-size:16px;line-height:1.5}
+.row .time{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+.row a:hover h3{color:var(--accent)}
+.empty{padding:40px 0;color:var(--muted)}
+.dots{display:inline-flex;gap:3px;vertical-align:middle}
+.dots i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--muted);display:block}
+.dots i.on{background:var(--tape);border-color:var(--tape)}
+
+/* article */
+.back{display:inline-block;margin:28px 0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--fg)}
+article{max-width:680px}
+article h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.025em;margin:8px 0 14px;text-wrap:balance}
+.dek{font-size:21px;line-height:1.5;color:var(--muted);margin:0 0 24px}
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:1px solid var(--fg);border-bottom:1px solid var(--fg);margin:0 0 32px}
+.spec div{padding:12px 16px 12px 0}
+.spec dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.spec dd{margin:4px 0 0;font-family:var(--display);font-weight:700;font-size:16px;line-height:1.3}
+article h2{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.015em;line-height:1.2;margin:40px 0 8px;text-wrap:balance}
+article p{margin:0 0 18px}
+article ol{padding:0;margin:0 0 22px;list-style:none;counter-reset:s}
+article ol li{counter-increment:s;position:relative;padding-left:48px;margin-bottom:14px}
+article ol li::before{content:counter(s);position:absolute;left:0;top:2px;width:30px;height:30px;border-radius:50%;background:var(--fg);color:var(--bg);font-family:var(--mono);font-size:13px;display:grid;place-items:center}
+article ul{margin:0 0 22px;padding-left:22px}
+article ul li{margin-bottom:8px}
+.note{border-left:4px solid var(--tape);background:var(--surface);padding:14px 18px;margin:0 0 24px;font-size:16.5px;line-height:1.55}
+.note b{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--tape)}
+.next{margin-top:56px;padding-top:20px;border-top:1px solid var(--line)}
+.next h4{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:500}
+.next a{font-family:var(--display);font-weight:700;font-size:20px;text-decoration:none}
+.next a:hover{color:var(--accent)}
+
+/* about */
+.about{max-width:680px;padding-top:20px}
+.about h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,48px);letter-spacing:-.025em;line-height:1.05;margin:8px 0 18px}
+.about h2{font-family:var(--display);font-weight:700;font-size:22px;margin:32px 0 6px}
+
+/* newsletter */
+.news{margin-top:48px;padding:28px;background:var(--surface);border:1px solid var(--line);border-radius:6px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 32px;align-items:center}
+.news h2{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1.1;margin:0 0 6px;text-wrap:balance}
+.news p{margin:0;color:var(--muted);font-size:16px;line-height:1.5}
+.news form{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+.news input[type=email]{flex:1 1 200px;min-width:0;font-family:var(--body);font-size:16px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:11px 12px}
+.news input[type=email]::placeholder{color:var(--muted)}
+.btn{font-family:var(--display);font-weight:700;font-size:15px;background:var(--accent);color:var(--accent-fg);border:1px solid var(--accent);border-radius:4px;padding:10px 18px;cursor:pointer;text-decoration:none;display:inline-block;line-height:1.4}
+.btn:hover{filter:brightness(1.12)}
+.btn.alt{background:none;color:var(--fg);border-color:var(--fg)}
+.btn[disabled]{opacity:.6;cursor:default}
+.status{flex-basis:100%;font-size:15px;line-height:1.5;margin:4px 0 0;min-height:1.5em}
+.status.ok{color:var(--accent)}
+.status.err{color:var(--tape)}
+.status a{color:inherit;font-weight:600}
+/* contact */
+.contact{max-width:680px;padding-top:20px}
+.contact h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,48px);letter-spacing:-.025em;line-height:1.05;margin:8px 0 18px;text-wrap:balance}
+.chans{margin:28px 0 0;border-top:1px solid var(--fg)}
+.chan{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 16px;padding:18px 0;border-bottom:1px solid var(--line)}
+.chan>div:first-child{min-width:0}
+.chan .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.chan .val{font-family:var(--display);font-weight:700;font-size:20px;overflow-wrap:anywhere}
+.chan .acts{display:flex;gap:8px;flex-wrap:wrap}
+footer a{color:var(--fg)}
+footer{margin-top:64px;padding-top:18px;border-top:3px solid var(--fg);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+
+@media (max-width:640px){
+  body{font-size:17px}
+  .row a{grid-template-columns:minmax(0,1fr);gap:6px;padding:18px 0}
+  .row .meta{flex-direction:row;gap:12px;flex-wrap:wrap}
+  .row .time{text-align:left;order:-1}
+  .row .time{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <a class="brand" href="#" id="brand"><b>Kickstand<span>.</span></b><small>Small-displacement scooter notes</small></a>
+    <nav class="top" aria-label="Main">
+      <a href="#" id="nav-home">Articles</a>
+      <a href="#about" id="nav-about">About</a>
+      <a href="#contact" id="nav-contact">Contact</a>
+      <button class="theme" id="themeBtn" type="button" aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </header>
+  <main id="app"></main>
+  <footer><span>Kickstand Journal. Check your owner's manual for torque and capacity figures.</span><span>riri384384@gmail.com · <a href="https://wa.me/254117272603" target="_blank" rel="noopener">WhatsApp +254 117 272 603</a></span></footer>
+</div>
+
+<script>
+var POSTS = [
+ {slug:"cvt-belt-replacement", cat:"Repair", title:"Replacing a CVT drive belt, start to finish", dek:"A worn belt makes a scooter slow off the line and shudder under load. Here is how to swap it without damaging the pulleys.", date:"Nov 3, 2026", time:"9 min read", job:"About 90 minutes", diff:3, tools:"Socket set, torque wrench, holding tool, belt",
+  body:[
+   {t:"p",x:"The belt is the part that turns engine speed into wheel speed on a twist-and-go scooter. It lives inside the CVT case, runs between two pulleys that change diameter as you accelerate, and wears a little on every ride. Most owners notice it as a loss of pull, a shudder from a standstill, or a belt that has glazed and started to slip."},
+   {t:"h",x:"Before you start"},
+   {t:"ul",x:["Find the belt part number and the minimum width in your service manual. Width is the number that decides whether the old belt is worn out.","Let the engine cool completely. The CVT case holds heat for a long time.","Put the scooter on its centre stand on level ground and disconnect the battery if you will be using an impact tool."]},
+   {t:"h",x:"Removing the old belt"},
+   {t:"ol",x:["Unbolt the CVT cover. Note which bolts are longer, and lay them out in the order they came out.","Hold the front pulley with a holding tool and remove its nut. Slide off the outer drive face.","Lift the belt off the front pulley, then walk it down between the rear pulley halves and out.","Measure the belt width across its widest point and compare it with the service limit."]},
+   {t:"note",h:"Replace it if",x:"The belt is below its width limit, has cracks across the teeth, shows glazed shiny sides, or has chunks missing. A belt that passes on width but looks glazed will still slip."},
+   {t:"h",x:"Fitting the new belt"},
+   {t:"ol",x:["Check the variator rollers while the pulley is off. Flat spots or cracked rollers should be replaced at the same time.","Clean the pulley faces with a cloth and brake cleaner. Any oil on the faces will ruin the new belt.","Fit the new belt in the direction of its rotation arrow if it has one, loop it over the rear pulley, and spread the rear halves so it sits low.","Refit the front drive face and nut. Tighten to the torque in your manual, then refit the cover."]},
+   {t:"p",x:"Take the first ride gently. A new belt needs a short bedding-in period, and a quick smell check afterwards is worth it: a hot rubber smell in the first few kilometres usually means a pulley face still has oil on it."}
+  ]},
+ {slug:"buying-first-used-scooter", cat:"Buying", title:"Buying your first used scooter: a checklist", dek:"Most of what goes wrong with a used scooter can be spotted in fifteen minutes in the seller's driveway.", date:"Oct 27, 2026", time:"7 min read", job:"15 minutes on site", diff:2, tools:"Torch, a friend, the ownership papers",
+  body:[
+   {t:"p",x:"A cheap scooter is rarely cheap if it needs a new belt, tyres, brakes and a battery in the first month. Go through the same checks every time, and walk away from anything that does not add up."},
+   {t:"h",x:"Paperwork first"},
+   {t:"ul",x:["The frame number on the bike must match the registration or ownership document. If it does not, stop there.","Ask for service records. Even a handwritten list of oil changes is a good sign.","Ask how long the seller has owned it and why they are selling."]},
+   {t:"h",x:"Cold start"},
+   {t:"p",x:"Ask the seller not to warm the scooter before you arrive. A healthy engine fires within a couple of cranks and settles to a steady idle. Blue smoke at start-up suggests oil is being burnt, and a rough idle that smooths out after a minute suggests a fuelling or choke issue."},
+   {t:"h",x:"Walk-around"},
+   {t:"ol",x:["Read the date code on each tyre. Four digits, week then year: 2220 means the 22nd week of 2020. Tyres older than about five years deserve a close look for cracking.","Hold the front brake and rock the scooter. Any knock from the steering head means worn bearings.","Look under the engine and around the forks for oil. A damp film is common, drips are not.","Twist the throttle and check it snaps back cleanly."]},
+   {t:"h",x:"The test ride"},
+   {t:"p",x:"Pull away firmly. The scooter should accelerate smoothly without shuddering, and the engine should not rev high while the speed stays low, which is what a slipping belt feels like. Brake hard once from a safe speed on a clear road, and listen for grinding."},
+   {t:"note",h:"Budget for it",x:"Set aside money for a fresh oil change, a new drive belt and tyres if their date codes are old. If the price leaves no room, negotiate or keep looking."}
+  ]},
+ {slug:"oil-change-four-stroke", cat:"Maintenance", title:"A clean oil change on a four-stroke scooter", dek:"Twenty minutes and a few tools. The part people get wrong is the level check, so we cover that properly.", date:"Oct 20, 2026", time:"6 min read", job:"About 30 minutes", diff:1, tools:"Drain pan, wrench, new crush washer, funnel",
+  body:[
+   {t:"p",x:"Engine oil on a small scooter works hard. The engine revs high, the oil capacity is small, and the oil is often shared with the clutch area on some models. Small capacity means oil breaks down faster than it does in a car, so keep to the interval in your manual. Many small scooters call for a change somewhere between 2,000 and 4,000 km, and sooner if you do short, hot, stop-start trips."},
+   {t:"h",x:"Steps"},
+   {t:"ol",x:["Ride for a few minutes to warm the oil, then park on the centre stand on level ground.","Place the drain pan under the drain bolt. Remove the filler cap first so the oil flows freely.","Undo the drain bolt and let the oil run out fully. Fit a new crush washer and refit the bolt to the torque in your manual.","If your scooter has a mesh strainer, remove it, clean it, and refit it with its O-ring.","Add the amount of oil your manual specifies. Do not pour it all in at once. Hold back a little, then check the level."]},
+   {t:"h",x:"Checking the level"},
+   {t:"p",x:"Methods differ between models. Some want the dipstick screwed in, others want it resting on the thread. The manual will say which. Check it with the engine off for a minute, scooter upright on the centre stand, and read the level between the two marks."},
+   {t:"note",h:"Do not forget",x:"The final drive has its own gear oil, separate from the engine. It is changed far less often, but it should be on your service schedule."}
+  ]},
+ {slug:"cranks-but-wont-start", cat:"Troubleshooting", title:"It cranks but it will not start", dek:"Work through fuel, spark and air in that order, and most no-start problems are found in under half an hour.", date:"Oct 12, 2026", time:"8 min read", job:"20 to 40 minutes", diff:2, tools:"Spark plug socket, a spare plug, screwdriver",
+  body:[
+   {t:"p",x:"An engine needs three things to run: fuel, spark and air in the right amounts, plus compression. If the starter is spinning the engine over at normal speed, compression is probably fine, so start with the cheap checks."},
+   {t:"h",x:"Rule out the obvious"},
+   {t:"ul",x:["Is the kill switch in the run position, and is the side stand switch not stuck?","Is there fuel in the tank? Gauges on small scooters can be unreliable.","Is the petcock on, if your model has a manual one?"]},
+   {t:"h",x:"Spark"},
+   {t:"ol",x:["Remove the spark plug cap and the plug.","Plug the cap back on, rest the threaded part of the plug against bare metal on the engine, and crank for a second. Keep your hand off the metal part of the plug.","A bright blue spark is good. No spark, or a weak orange one, means a bad plug, cap or coil. Swap in a new plug before going further."]},
+   {t:"h",x:"Fuel"},
+   {t:"p",x:"A plug that comes out wet and smelling of petrol means the engine is flooded. Dry the plug, open the throttle fully with no choke, and crank for several seconds. A plug that is dry points at a lack of fuel: a blocked fuel filter, a stuck petcock, a dirty carburettor jet, or a failed fuel pump on injected models."},
+   {t:"h",x:"Air"},
+   {t:"p",x:"Take the air filter out and look at it. A filter soaked in oil or packed with dirt can choke an engine so badly that it will not fire."},
+   {t:"note",h:"Still stuck?",x:"If all three look good, the next steps are a compression test and checking that the valve clearances are within spec. Both are jobs worth doing with the manual open."}
+  ]},
+ {slug:"tyre-pressure-and-plugs", cat:"Maintenance", title:"Tyre pressure, and when a plug is enough", dek:"Scooter tyres are small, and small tyres punish bad pressure. A two-minute weekly check does more than most upgrades.", date:"Oct 5, 2026", time:"5 min read", job:"2 minutes weekly", diff:1, tools:"Pressure gauge, plug kit, pump",
+  body:[
+   {t:"p",x:"Scooters have small wheels, which means the tyre carries a lot of load for its size and a few psi of difference changes how the bike steers, brakes and wears. Check pressure when the tyres are cold, before you ride, and use the figures on the sticker or in the manual. Front and rear are usually different, and the pillion figure is often higher."},
+   {t:"h",x:"What bad pressure feels like"},
+   {t:"ul",x:["Too low: heavy, vague steering, wobbly in corners, and the sidewall wears faster.","Too high: skittish over bumps, reduced grip, and a harsh ride."]},
+   {t:"h",x:"Plugging a puncture"},
+   {t:"p",x:"If your tyres are tubeless and the puncture is in the tread, a rope plug from a kit can get you home. Treat it as a short-term fix. Plugs are not recommended in the sidewall or near it, and many riders replace the tyre rather than rely on a plug at speed or on the front wheel."},
+   {t:"note",h:"Check the date",x:"Rubber ages even when it is not worn. Look for cracking at the base of the tread grooves and on the sidewalls, and replace tyres that show it regardless of how much tread is left."}
+  ]},
+ {slug:"electric-scooter-battery-care", cat:"Electric", title:"Making an electric scooter battery last", dek:"Lithium batteries age with heat, deep discharge and time. A few habits slow all three.", date:"Nov 6, 2026", time:"6 min read", job:"Ongoing habits", diff:1, tools:"The charger that came with the scooter",
+  body:[
+   {t:"p",x:"The battery is the most expensive part of an electric scooter, and how you treat it decides how many years of range you get. Most scooters use lithium-ion cells, which wear out through use, heat and age. You cannot stop that, but you can slow it down."},
+   {t:"h",x:"Charging habits"},
+   {t:"ul",x:["Use the charger supplied with the scooter, or one the maker approves. A charger with the wrong voltage or current can damage the cells.","Avoid running the battery flat as a routine. Charging when it drops to around 20 percent is kinder than waiting for the cutout.","Let a hot battery cool before you charge it, and charge in a shaded, ventilated place.","Unplug it once it is full instead of leaving it on charge for days."]},
+   {t:"h",x:"Storing it"},
+   {t:"p",x:"If the scooter will sit for weeks, leave the battery partly charged, often somewhere around half, rather than full or empty, and keep it cool and dry. Top it up every month or two. Your manual may give its own storage figure, and that figure wins."},
+   {t:"note",h:"Safety",x:"A battery that swells, smells sharp or gets very hot while charging should be unplugged and moved away from anything flammable. Do not keep riding on a damaged pack. Have it checked by the maker or a qualified shop."},
+   {t:"h",x:"What changes your range"},
+   {t:"ul",x:["Cold weather reduces range temporarily, and it returns when the battery warms up.","Speed matters. Riding flat out uses far more energy per kilometre than a moderate pace.","Low tyre pressure adds rolling resistance and shortens the distance you get."]}
+  ]},
+ {slug:"choosing-a-helmet", cat:"Gear & Safety", title:"Choosing a helmet that actually fits", dek:"The best helmet is the one you wear on every ride, and it only protects you if it fits properly.", date:"Oct 30, 2026", time:"6 min read", job:"20 minutes in a shop", diff:1, tools:"A soft tape measure and a mirror",
+  body:[
+   {t:"p",x:"A helmet that is loose, or that rides up on your forehead, can shift or come off in a crash. Fit matters more than price, so try several and choose by how they sit on your head."},
+   {t:"h",x:"Finding your size"},
+   {t:"ol",x:["Measure around your head, about a finger above your eyebrows, and compare the number with the maker's size chart.","Put the helmet on and fasten the strap. It should feel snug all round, with even pressure and no sharp pressure points.","Hold the helmet and try to roll it forward and back, then side to side. Your skin should move with it. If the helmet slides around on your head, try a smaller size.","Check you can see to both sides without turning your head, and that the visor opens and closes cleanly.","Wear it for ten minutes. A pressure point that is mild at first can become a headache on a long ride."]},
+   {t:"h",x:"What to look for"},
+   {t:"ul",x:["A certification label from a recognised safety standard, on the helmet itself and not only on the box.","A visor that is clear and free of scratches, and a strap that fastens securely.","Vents you can open and close. A helmet that makes you hot tends to get left at home."]},
+   {t:"note",h:"When to replace it",x:"Replace a helmet after any hard impact, even if it looks fine, since the foam inside may be damaged. Many makers also advise replacing helmets every five years or so, because the materials age."}
+  ]},
+ {slug:"riding-in-the-rain", cat:"Riding Tips", title:"Riding a scooter in the rain", dek:"Small wheels and narrow tyres leave less margin on wet roads. Smooth inputs and early planning make up the difference.", date:"Oct 16, 2026", time:"5 min read", job:"A change of habits", diff:2, tools:"Good tyres, a rain jacket, patience",
+  body:[
+   {t:"p",x:"Wet roads reduce grip, and a scooter has less of it to spare than most vehicles. Most rain-riding trouble comes from rushed inputs, not from the rain itself."},
+   {t:"h",x:"Before you set off"},
+   {t:"ul",x:["Check tyre tread and pressure. Worn tyres lose grip quickly on wet roads.","Wear something bright or reflective. Drivers see less through rain and spray.","Treat your visor with an anti-fog product, or crack the vent open."]},
+   {t:"h",x:"On the road"},
+   {t:"ol",x:["Slow down early and leave about twice the usual gap to the vehicle ahead.","Use both brakes together and squeeze them smoothly. Do not grab a handful of front brake.","Stay off painted lines, metal covers and the shiny strip in the middle of a lane where oil collects. These are the slipperiest spots.","Keep the scooter as upright as you can through corners. Slow down before the bend, not in it.","Treat standing water with caution. It can hide potholes, and deep water can reach the air intake."]},
+   {t:"note",h:"After the ride",x:"Wipe the scooter down and check that the brakes feel normal before you park it. Water left sitting in electrical connectors can cause faults later."}
+  ]}
+];
+POSTS.sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
+
+var CATS = ["All","Repair","Buying","Maintenance","Troubleshooting","Electric","Gear & Safety","Riding Tips"];
+var state = {cat:"All", q:""};
+var app = document.getElementById("app");
+
+function el(tag, attrs, kids){
+  var n = document.createElement(tag);
+  if (attrs) for (var k in attrs){
+    if (k === "text") n.textContent = attrs[k];
+    else if (k === "class") n.className = attrs[k];
+    else n.setAttribute(k, attrs[k]);
+  }
+  (kids || []).forEach(function(c){ if (c) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+  return n;
+}
+function dots(n){
+  var d = el("span", {class:"dots", "aria-label":"Difficulty " + n + " of 5", role:"img"});
+  for (var i = 1; i <= 5; i++) d.appendChild(el("i", {class: i <= n ? "on" : ""}));
+  return d;
+}
+function setCurrent(id){
+  ["nav-home","nav-about","nav-contact"].forEach(function(x){
+    var a = document.getElementById(x);
+    if (x === id) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current");
+  });
+}
+
+function home(){
+  setCurrent("nav-home");
+  document.title = "Kickstand Journal";
+  app.textContent = "";
+  var q = state.q.trim().toLowerCase();
+  var list = POSTS.filter(function(p){
+    var okCat = state.cat === "All" || p.cat === state.cat;
+    var okQ = !q || (p.title + " " + p.dek + " " + p.cat).toLowerCase().indexOf(q) > -1;
+    return okCat && okQ;
+  });
+
+  var chips = el("div", {class:"chips", role:"group", "aria-label":"Filter by topic"});
+  CATS.forEach(function(c){
+    var b = el("button", {class:"chip", type:"button", "aria-pressed": String(state.cat === c), text:c});
+    b.addEventListener("click", function(){ state.cat = c; home(); });
+    chips.appendChild(b);
+  });
+  var search = el("input", {class:"search", id:"search", type:"search", placeholder:"Search articles", "aria-label":"Search articles", value:state.q});
+  search.addEventListener("input", function(){
+    state.q = search.value;
+    var pos = search.selectionStart;
+    home();
+    var s = document.getElementById("search");
+    s.focus(); try { s.setSelectionRange(pos, pos); } catch(e){}
+  });
+  app.appendChild(el("div", {class:"tools"}, [chips, search]));
+
+  if (!list.length){
+    app.appendChild(el("p", {class:"empty", text:"No articles match that search. Try a different word or pick All."}));
+    return;
+  }
+  var showLead = state.cat === "All" && !q;
+  var rest = list;
+  if (showLead){
+    var p = list[0]; rest = list.slice(1);
+    var lead = el("section", {class:"lead"}, [
+      el("a", {href:"#" + p.slug}, [
+        el("span", {class:"kicker", text: p.cat + " · " + p.date}),
+        el("h2", {text:p.title}),
+        el("p", {text:p.dek})
+      ])
+    ]);
+    app.appendChild(lead);
+  }
+  var ul = el("ul", {class:"rows"});
+  rest.forEach(function(p){
+    ul.appendChild(el("li", {class:"row"}, [
+      el("a", {href:"#" + p.slug}, [
+        el("div", {class:"meta"}, [el("span", {text:p.cat}), el("span", {text:p.date})]),
+        el("div", null, [el("h3", {text:p.title}), el("p", {text:p.dek})]),
+        el("div", {class:"time", text:p.time})
+      ])
+    ]));
+  });
+  app.appendChild(ul);
+  app.appendChild(newsletter());
+}
+
+function article(p){
+  setCurrent("nav-home");
+  document.title = p.title + " · Kickstand Journal";
+  app.textContent = "";
+  app.appendChild(el("a", {class:"back", href:"#", text:"← All articles"}));
+  var a = el("article");
+  a.appendChild(el("span", {class:"kicker", text:p.cat + " · " + p.date}));
+  a.appendChild(el("h1", {text:p.title}));
+  a.appendChild(el("p", {class:"dek", text:p.dek}));
+  var dl = el("dl", {class:"spec"}, [
+    el("div", null, [el("dt", {text:"Job time"}), el("dd", {text:p.job})]),
+    el("div", null, [el("dt", {text:"Difficulty"}), el("dd", null, [dots(p.diff)])]),
+    el("div", null, [el("dt", {text:"You will need"}), el("dd", {text:p.tools})])
+  ]);
+  a.appendChild(dl);
+  p.body.forEach(function(b){
+    if (b.t === "p") a.appendChild(el("p", {text:b.x}));
+    else if (b.t === "h") a.appendChild(el("h2", {text:b.x}));
+    else if (b.t === "ul" || b.t === "ol"){
+      var l = el(b.t);
+      b.x.forEach(function(i){ l.appendChild(el("li", {text:i})); });
+      a.appendChild(l);
+    } else if (b.t === "note"){
+      a.appendChild(el("div", {class:"note"}, [el("b", {text:b.h}), document.createTextNode(b.x)]));
+    }
+  });
+  var i = POSTS.indexOf(p), nx = POSTS[(i + 1) % POSTS.length];
+  a.appendChild(el("div", {class:"next"}, [el("h4", {text:"Next up"}), el("a", {href:"#" + nx.slug, text:nx.title})]));
+  app.appendChild(a);
+  app.appendChild(newsletter());
+}
+
+function about(){
+  setCurrent("nav-about");
+  document.title = "About · Kickstand Journal";
+  app.textContent = "";
+  app.appendChild(el("section", {class:"about"}, [
+    el("span", {class:"kicker", text:"About"}),
+    el("h1", {text:"Plain guides for small scooters"}),
+    el("p", {text:"Kickstand Journal covers the 50 to 150 cc scooters most people ride to work, to college and to the shops. We write repair walkthroughs, buying checklists and maintenance routines that a patient owner can follow with a basic tool kit."}),
+    el("h2", {text:"How guides are written"}),
+    el("p", {text:"Every guide lists the job time, a difficulty rating out of five and the tools you need before the first step. Where a figure depends on your model, such as a torque value or an oil capacity, we say so and send you to the owner's manual instead of guessing."}),
+    el("h2", {text:"Topics"}),
+    el("ul", null, CATS.slice(1).map(function(c){ return el("li", {text:c}); }))
+  ]));
+}
+
+var EMAIL = "riri384384@gmail.com";
+var PHONE_INTL = "254117272603";
+var PHONE_SHOWN = "+254 117 272 603";
+var WA = "https://wa.me/" + PHONE_INTL;
+function waLink(msg){ return WA + "?text=" + encodeURIComponent(msg); }
+
+/* runtime capabilities resolve later, or never (null) outside the viewer */
+var DB = null, USER = null;
+(function(){
+  var C = window.claude;
+  if (!C || !C.use) return;
+  C.use("db").then(function(d){ DB = d; }).catch(function(){});
+  C.use("user").then(function(u){ USER = u; }).catch(function(){});
+})();
+
+function copyText(text, btn, node){
+  var orig = btn.textContent;
+  function done(msg){ btn.textContent = msg; setTimeout(function(){ btn.textContent = orig; }, 1800); }
+  function fallback(){
+    try {
+      var r = document.createRange(); r.selectNodeContents(node);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    } catch(e){}
+    done("Selected");
+  }
+  try { navigator.clipboard.writeText(text).then(function(){ done("Copied"); }, fallback); }
+  catch(e){ fallback(); }
+}
+
+function saveSubscriber(email){
+  if (!DB) return Promise.reject(new Error("db unavailable"));
+  if (!USER) return Promise.reject(new Error("user unavailable"));
+  return Promise.resolve(USER.can ? USER.can("data.write") : null).then(function(ok){
+    if (ok === false) throw new Error("read only");
+    return Promise.resolve(USER.id());
+  }).then(function(uid){
+    if (!uid) throw new Error("no id");
+    return DB.collection("subscribers").doc(uid).set({email: email, subscribedAt: new Date().toISOString()});
+  });
+}
+
+function newsletter(){
+  var status = el("p", {class:"status", role:"status"});
+  var input = el("input", {type:"email", id:"nl-email", placeholder:"you@example.com", "aria-label":"Email address", autocomplete:"email"});
+  var btn = el("button", {class:"btn", type:"submit", text:"Subscribe"});
+  var form = el("form", {novalidate:"novalidate"}, [input, btn, status]);
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var email = input.value.trim().toLowerCase();
+    status.className = "status";
+    status.textContent = "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      status.className = "status err";
+      status.textContent = "Enter a valid email address, like name@example.com.";
+      return;
+    }
+    btn.disabled = true;
+    status.textContent = "Saving...";
+    saveSubscriber(email).then(function(){
+      status.className = "status ok";
+      status.textContent = "You are on the list.";
+      input.value = "";
+    }).catch(function(){
+      status.className = "status err";
+      status.textContent = "Email signup is not available from this view. ";
+      status.appendChild(el("a", {href:waLink("Hi, please add me to the Kickstand Journal newsletter."), target:"_blank", rel:"noopener", text:"Join on WhatsApp instead"}));
+    }).then(function(){ btn.disabled = false; });
+  });
+  return el("section", {class:"news", "aria-labelledby":"nl-h"}, [
+    el("div", null, [
+      el("h2", {id:"nl-h", text:"Get new guides by email"}),
+      el("p", {text:"Repair walkthroughs, buying checklists and maintenance routines for small scooters. Leave your email to join the list."})
+    ]),
+    form
+  ]);
+}
+
+function contact(){
+  setCurrent("nav-contact");
+  document.title = "Contact · Kickstand Journal";
+  app.textContent = "";
+  var emailVal = el("div", {class:"val", text:EMAIL});
+  var copyEmail = el("button", {class:"btn alt", type:"button", text:"Copy"});
+  copyEmail.addEventListener("click", function(){ copyText(EMAIL, copyEmail, emailVal); });
+  var phoneVal = el("div", {class:"val", text:PHONE_SHOWN});
+  var copyPhone = el("button", {class:"btn alt", type:"button", text:"Copy"});
+  copyPhone.addEventListener("click", function(){ copyText(PHONE_SHOWN, copyPhone, phoneVal); });
+  var wa = el("a", {class:"btn", href:waLink("Hi Kickstand Journal, I have a question about my scooter."), target:"_blank", rel:"noopener", text:"Open WhatsApp"});
+  app.appendChild(el("section", {class:"contact"}, [
+    el("span", {class:"kicker", text:"Contact"}),
+    el("h1", {text:"Ask a question or suggest a guide"}),
+    el("p", {text:"Send your scooter's make, model and what is going wrong, or tell us which guide you would like to see next. WhatsApp is the quickest way to reach us."}),
+    el("div", {class:"chans"}, [
+      el("div", {class:"chan"}, [el("div", null, [el("span", {class:"lbl", text:"WhatsApp"}), phoneVal]), el("div", {class:"acts"}, [wa, copyPhone])]),
+      el("div", {class:"chan"}, [el("div", null, [el("span", {class:"lbl", text:"Email"}), emailVal]), el("div", {class:"acts"}, [copyEmail])])
+    ])
+  ]));
+  app.appendChild(newsletter());
+}
+
+function route(){
+  var h = location.hash.replace("#", "");
+  var p = POSTS.filter(function(x){ return x.slug === h; })[0];
+  if (h === "about") about();
+  else if (h === "contact") contact();
+  else if (p) article(p);
+  else home();
+  if (h) window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+document.getElementById("brand").addEventListener("click", function(e){
+  if (location.hash){ return; }
+  e.preventDefault(); state.cat = "All"; state.q = ""; home();
+});
+
+/* theme toggle: cycles system -> dark -> light */
+(function(){
+  var btn = document.getElementById("themeBtn");
+  var modes = ["system","dark","light"], i = 0;
+  function apply(){
+    var r = document.documentElement;
+    if (modes[i] === "system") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", modes[i]);
+    btn.textContent = "Theme: " + modes[i];
+  }
+  btn.addEventListener("click", function(){ i = (i + 1) % modes.length; apply(); });
+  apply();
+})();
+
+route();
+</script>
+</body>
+</html>
