@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Scooter Planet</title>
+<title>Kickstand Journal</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
@@ -180,19 +180,19 @@ footer{margin-top:64px;padding-top:24px;border-top:3px solid var(--fg);display:g
 <body>
 <div class="wrap">
   <header class="mast">
-    <a class="brand" href="#" id="brand"><b>Scooter <span>Planet</span></b><small>Your Ride, Our Expertise</small></a>
+    <a class="brand" href="#" id="brand"><b>Kickstand<span>.</span></b><small>Your Ride, Our Expertise</small></a>
     <nav class="top" aria-label="Main">
       <a href="#" id="nav-home">Home</a>
       <a href="#articles" id="nav-articles">News &amp; Articles</a>
       <a href="#about" id="nav-about">About</a>
       <a href="#contact" id="nav-contact">Contact</a>
-      <a class="btn" id="nav-book" href="https://wa.me/254117272603?text=Hi%20Scooter%20Planet%2C%20I%20would%20like%20to%20book%20a%20scooter%20diagnosis." target="_blank" rel="noopener">Book Diagnosis</a>
+      <a class="btn" id="nav-book" href="https://wa.me/254117272603?text=Hi%20Kickstand%20Journal%2C%20I%20would%20like%20to%20book%20a%20scooter%20diagnosis." target="_blank" rel="noopener">Book Diagnosis</a>
       <button class="theme" id="themeBtn" type="button" aria-label="Switch colour theme">Theme</button>
     </nav>
   </header>
   <main id="app"></main>
   <footer>
-    <div class="fcol"><b>Scooter Planet</b><span>Your Ride, Our Expertise. Repair, buying and maintenance guides for small scooters, written by Stephen Kiiru.</span></div>
+    <div class="fcol"><b>Kickstand Journal</b><span>Your Ride, Our Expertise. Repair, buying and maintenance guides for small scooters, written by Stephen Kiiru.</span></div>
     <div class="fcol"><b>Quick links</b><a href="#">Home</a><a href="#about">About</a><a href="#articles">News &amp; Articles</a><a href="#contact">Contact</a></div>
     <div class="fcol"><b>Contact</b><span>riri384384@gmail.com</span><a href="https://wa.me/254117272603" target="_blank" rel="noopener">WhatsApp +254 117 272 603</a></div>
     <div class="fbase">© 2026 Stephen Kiiru. Check your owner's manual for torque and capacity figures.</div>
@@ -317,7 +317,7 @@ function setCurrent(id){
 
 function articles(){
   setCurrent("nav-articles");
-  document.title = "News & Articles · Scooter Planet";
+  document.title = "News & Articles · Kickstand Journal";
   app.textContent = "";
   var q = state.q.trim().toLowerCase();
   var list = POSTS.filter(function(p){
@@ -375,7 +375,7 @@ function articles(){
 
 function article(p){
   setCurrent("nav-articles");
-  document.title = p.title + " · Scooter Planet";
+  document.title = p.title + " · Kickstand Journal";
   app.textContent = "";
   app.appendChild(el("a", {class:"back", href:"#articles", text:"← All articles"}));
   var a = el("article");
@@ -408,16 +408,16 @@ function article(p){
 
 function about(){
   setCurrent("nav-about");
-  document.title = "About · Scooter Planet";
+  document.title = "About · Kickstand Journal";
   app.textContent = "";
   app.appendChild(el("section", {class:"about"}, [
     el("span", {class:"kicker", text:"About"}),
     el("h1", {text:"Plain guides for small scooters"}),
-    el("p", {text:"Scooter Planet covers the 50 to 150 cc scooters most people ride to work, to college and to the shops. We write repair walkthroughs, buying checklists and maintenance routines that a patient owner can follow with a basic tool kit."}),
+    el("p", {text:"Kickstand Journal covers the 50 to 150 cc scooters most people ride to work, to college and to the shops. We write repair walkthroughs, buying checklists and maintenance routines that a patient owner can follow with a basic tool kit."}),
     el("h2", {text:"How guides are written"}),
     el("p", {text:"Every guide lists the job time, a difficulty rating out of five and the tools you need before the first step. Where a figure depends on your model, such as a torque value or an oil capacity, we say so and send you to the owner's manual instead of guessing."}),
     el("h2", {text:"Who runs it"}),
-    el("p", {text:"Scooter Planet is owned, written and edited by Stephen Kiiru. Questions, corrections and guide requests go straight to him through the Contact page."}),
+    el("p", {text:"Kickstand Journal is owned, written and edited by Stephen Kiiru. Questions, corrections and guide requests go straight to him through the Contact page."}),
     el("h2", {text:"Topics"}),
     el("ul", null, CATS.slice(1).map(function(c){ return el("li", {text:c}); }))
   ]));
@@ -488,7 +488,7 @@ function newsletter(){
     }).catch(function(){
       status.className = "status err";
       status.textContent = "Email signup is not available from this view. ";
-      status.appendChild(el("a", {href:waLink("Hi, please add me to the Scooter Planet newsletter."), target:"_blank", rel:"noopener", text:"Join on WhatsApp instead"}));
+      status.appendChild(el("a", {href:waLink("Hi, please add me to the Kickstand Journal newsletter."), target:"_blank", rel:"noopener", text:"Join on WhatsApp instead"}));
     }).then(function(){ btn.disabled = false; });
   });
   return el("section", {class:"news", "aria-labelledby":"nl-h"}, [
@@ -502,7 +502,7 @@ function newsletter(){
 
 function contact(){
   setCurrent("nav-contact");
-  document.title = "Contact · Scooter Planet";
+  document.title = "Contact · Kickstand Journal";
   app.textContent = "";
   var emailVal = el("div", {class:"val", text:EMAIL});
   var copyEmail = el("button", {class:"btn alt", type:"button", text:"Copy"});
@@ -510,7 +510,7 @@ function contact(){
   var phoneVal = el("div", {class:"val", text:PHONE_SHOWN});
   var copyPhone = el("button", {class:"btn alt", type:"button", text:"Copy"});
   copyPhone.addEventListener("click", function(){ copyText(PHONE_SHOWN, copyPhone, phoneVal); });
-  var wa = el("a", {class:"btn", href:waLink("Hi Scooter Planet, I have a question about my scooter."), target:"_blank", rel:"noopener", text:"Open WhatsApp"});
+  var wa = el("a", {class:"btn", href:waLink("Hi Kickstand Journal, I have a question about my scooter."), target:"_blank", rel:"noopener", text:"Open WhatsApp"});
   app.appendChild(el("section", {class:"contact"}, [
     el("span", {class:"kicker", text:"Contact"}),
     el("h1", {text:"Ask a question or suggest a guide"}),
@@ -524,7 +524,7 @@ function contact(){
 }
 
 
-function ctaLink(){ return waLink("Hi Scooter Planet, I would like to book a scooter diagnosis. My scooter make and model: ... The problem: ..."); }
+function ctaLink(){ return waLink("Hi Kickstand Journal, I would like to book a scooter diagnosis. My scooter make and model: ... The problem: ..."); }
 function goCat(c){
   state.cat = c; state.q = "";
   if (location.hash === "#articles") articles(); else location.hash = "articles";
@@ -540,7 +540,7 @@ function postRow(p){
 }
 function home(){
   setCurrent("nav-home");
-  document.title = "Scooter Planet";
+  document.title = "Kickstand Journal";
   app.textContent = "";
 
   var plate = el("dl", {class:"plate"}, [
@@ -565,7 +565,7 @@ function home(){
   app.appendChild(el("section", {class:"sec"}, [
     el("span", {class:"kicker", text:"About us"}),
     el("h2", {text:"A clear breakdown of what we offer"}),
-    el("p", {text:"Scooter Planet is a one-stop site for everything scooter. We write guides that a patient owner can follow with a basic tool kit, and we say plainly how long each job takes and how hard it is before you start."}),
+    el("p", {text:"Kickstand Journal is a one-stop site for everything scooter. We write guides that a patient owner can follow with a basic tool kit, and we say plainly how long each job takes and how hard it is before you start."}),
     el("a", {class:"more", href:"#about", text:"Know more about us"})
   ]));
 
