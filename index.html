@@ -84,6 +84,7 @@ nav.top a:hover{border-color:var(--muted)}
 article{max-width:680px}
 article h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.025em;margin:8px 0 14px;text-wrap:balance}
 .dek{font-size:21px;line-height:1.5;color:var(--muted);margin:0 0 24px}
+.byline{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:-10px 0 24px}
 .spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:1px solid var(--fg);border-bottom:1px solid var(--fg);margin:0 0 32px}
 .spec div{padding:12px 16px 12px 0}
 .spec dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -148,7 +149,7 @@ footer{margin-top:64px;padding-top:18px;border-top:3px solid var(--fg);display:f
 <body>
 <div class="wrap">
   <header class="mast">
-    <a class="brand" href="#" id="brand"><b>Kickstand<span>.</span></b><small>Small-displacement scooter notes</small></a>
+    <a class="brand" href="#" id="brand"><b>Kickstand<span>.</span></b><small>Small-displacement scooter notes · by Stephen Kiiru</small></a>
     <nav class="top" aria-label="Main">
       <a href="#" id="nav-home">Articles</a>
       <a href="#about" id="nav-about">About</a>
@@ -157,7 +158,7 @@ footer{margin-top:64px;padding-top:18px;border-top:3px solid var(--fg);display:f
     </nav>
   </header>
   <main id="app"></main>
-  <footer><span>Kickstand Journal. Check your owner's manual for torque and capacity figures.</span><span>riri384384@gmail.com · <a href="https://wa.me/254117272603" target="_blank" rel="noopener">WhatsApp +254 117 272 603</a></span></footer>
+  <footer><span>© 2026 Stephen Kiiru. Kickstand Journal. Check your owner's manual for torque and capacity figures.</span><span>riri384384@gmail.com · <a href="https://wa.me/254117272603" target="_blank" rel="noopener">WhatsApp +254 117 272 603</a></span></footer>
 </div>
 
 <script>
@@ -343,6 +344,7 @@ function article(p){
   a.appendChild(el("span", {class:"kicker", text:p.cat + " · " + p.date}));
   a.appendChild(el("h1", {text:p.title}));
   a.appendChild(el("p", {class:"dek", text:p.dek}));
+  a.appendChild(el("p", {class:"byline", text:"By Stephen Kiiru · " + p.date}));
   var dl = el("dl", {class:"spec"}, [
     el("div", null, [el("dt", {text:"Job time"}), el("dd", {text:p.job})]),
     el("div", null, [el("dt", {text:"Difficulty"}), el("dd", null, [dots(p.diff)])]),
@@ -376,6 +378,8 @@ function about(){
     el("p", {text:"Kickstand Journal covers the 50 to 150 cc scooters most people ride to work, to college and to the shops. We write repair walkthroughs, buying checklists and maintenance routines that a patient owner can follow with a basic tool kit."}),
     el("h2", {text:"How guides are written"}),
     el("p", {text:"Every guide lists the job time, a difficulty rating out of five and the tools you need before the first step. Where a figure depends on your model, such as a torque value or an oil capacity, we say so and send you to the owner's manual instead of guessing."}),
+    el("h2", {text:"Who runs it"}),
+    el("p", {text:"Kickstand Journal is owned, written and edited by Stephen Kiiru. Questions, corrections and guide requests go straight to him through the Contact page."}),
     el("h2", {text:"Topics"}),
     el("ul", null, CATS.slice(1).map(function(c){ return el("li", {text:c}); }))
   ]));
